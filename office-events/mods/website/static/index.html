@@ -11,7 +11,11 @@
 <body>
 <script>
     var eb = null;
-
+    var styles = {
+        "notification":"alert-error",
+        "invitation":"alert-success",
+        "occasion":"alert-info"
+    };
     function publish(address, message) {
         if (eb) {
             eb.publish(address, message);
@@ -21,7 +25,7 @@
     function subscribe(address) {
         if (eb) {
             eb.registerHandler(address, function (msg, replyTo) {
-                $('#messages').append("<div class=\"" + msg.type + "\">" + msg.message + "</div>");
+                $('#messages').append("<div class=\"alert " + styles[msg.type] + "\">" + msg.message + "</div>");
             });
         }
     }
@@ -74,16 +78,18 @@
 
     <div class="row">
         <div class="span8">
-            <div id="messages">
+            <div id="messages" class="well">
                 <h2>Your Messages</h2>
             </div>
         </div>
         <div class="span4">
             <div id="invitationForm">
                 <form onsubmit="return false;">
-                    Message : <input type="text" id="message" value="Kom je ook op mijn feestje"/><br/>
-                    Max persons : <input type="text" id="maxpersons" value="10"/><br/>
-                    <input type="button" id="sendButton" value="Create invitation"/>
+                    <legend>Create invitation</legend>
+                    <label>Message</label>
+                    <input type="text" id="message" placeholder="description ..."/><br/>
+                    <label>Max persons</label><input type="text" id="maxpersons" value="10"/><br/>
+                    <input type="button" id="sendButton" value="Create invitation" class="btn"/>
                 </form>
             </div>
         </div>
