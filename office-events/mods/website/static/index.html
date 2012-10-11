@@ -18,14 +18,32 @@
     };
     function publish(address, message) {
         if (eb) {
-            eb.publish(address, message);
+            eb.send(address, message, function (reply) {
+                $('#replymessage').html("<div class=\"alert alert-info\">" + reply.message + "</div>");
+                $('#replymessage').fadeIn('fast');
+                $('#replymessage').fadeOut(5000);
+            });
         }
+    }
+
+    function register(id) {
+        var message = {invitationid:id};
+        publish("message.registerinvitation", message);
     }
 
     function subscribe(address) {
         if (eb) {
             eb.registerHandler(address, function (msg, replyTo) {
-                $('#messages').append("<div class=\"alert " + styles[msg.type] + "\">" + msg.message + "</div>");
+                if ('invitation' == msg.type) {
+                    $('#messages').append("<div class=\"alert " + styles[msg.type] + "\">" + msg.message +
+                            " (max " + msg.maxPersons + " persons)" +
+                            "<div class=\"pull-right\">" +
+                            "<button class=\"btn btn-mini\" type=\"button\" onclick=\"register('" + msg.id + "')\">Register</button>" +
+                            "</div>" +
+                            "</div>");
+                } else {
+                    $('#messages').append("<div class=\"alert " + styles[msg.type] + "\">" + msg.message + "</div>");
+                }
             });
         }
     }
@@ -83,6 +101,7 @@
             </div>
         </div>
         <div class="span4">
+            <div id="replymessage"></div>
             <div id="invitationForm">
                 <form onsubmit="return false;">
                     <legend>Create invitation</legend>
