@@ -43,5 +43,6 @@ EventBus.register_handler("message.registerinvitation") do |message|
          }) do |replyMessage|
         logger.info "We stored the updated number of registered persons for " + message.body['invitationid']
     end
-
 end
+
+logger.info "The invitation module is started"

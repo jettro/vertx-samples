@@ -57,4 +57,4 @@ vertx.createSockJSServer(server).bridge(prefix: '/eventbus', [[:]], [[:]])
 
 server.listen(8080)
 
-log.info "The http servers is started"
+log.info "The http server is started"

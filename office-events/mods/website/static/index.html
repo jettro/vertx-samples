@@ -76,6 +76,11 @@
             publish("message.newinvitation", json);
         });
 
+        $("#startBackupBtn").click(function () {
+            var message = {};
+            publish("message.backup.create", message);
+        });
+
         openConn();
     });
 
@@ -110,6 +115,9 @@
                     <label>Max persons</label><input type="text" id="maxpersons" value="10"/><br/>
                     <input type="button" id="sendButton" value="Create invitation" class="btn"/>
                 </form>
+            </div>
+            <div id="startBackupForm">
+                <a id="startBackupBtn" class="btn">Start backup</a>
             </div>
         </div>
     </div>
