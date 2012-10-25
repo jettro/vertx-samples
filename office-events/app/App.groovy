@@ -8,7 +8,7 @@ def log = container.logger
 def mongoConfig = ["db_name": "officeevents", "address": "vertx.persist"]
 
 container.with {
-    deployModule('vertx.mongo-persistor-v1.1', mongoConfig, 1) { deploymentID ->
+    deployModule('vertx.mongo-persistor-v1.2', mongoConfig, 1) { deploymentID ->
         log.info "Started the mongo-persister module."
     }
     deployModule('website', [:], 4) {deploymentID ->
