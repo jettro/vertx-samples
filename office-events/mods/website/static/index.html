@@ -60,11 +60,15 @@
 
             eb.onopen = function () {
                 $("#status_info").text("Connected");
-                subscribe("message.forclients");
+                $("#status_info").removeClass("alert-error");
+                $("#status_info").addClass("alert-success");
+                subscribe("message.all.clients");
             };
 
             eb.onclose = function () {
                 $("#status_info").text("Not connected");
+                $("#status_info").removeClass("alert-success");
+                $("#status_info").addClass("alert-error");
                 eb = null;
             };
         }
@@ -89,15 +93,21 @@
     <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="#">Vert.x sample</a>
-
-            <div id="status_info">Not Connected</div>
         </div>
     </div>
 </div>
 <div class="container">
-    <h1>Polyglot Message Center</h1>
+    <div class="row">
+        <div class="span8">
+            <h1>Polyglot Message Center</h1>
 
-    <p>Shows the different message types that are send using the vert.x event bus.</p>
+            <p>Shows the different message types that are send using the vert.x event bus.</p>
+        </div>
+        <div class="span4">
+            <div id="status_info" class="alert alert-error">Not Connected</div>
+        </div>
+    </div>
+
 
     <div class="row">
         <div class="span8">

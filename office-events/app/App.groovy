@@ -1,5 +1,7 @@
 /**
- * This verticle installs the modules and the worker verticle that make the application run.
+ * Main vertivle for the office events application. This verticle 
+ * installs the modules and the worker verticle that make the 
+ * application run.
  *
  * @author Jettro Coenradie
  */

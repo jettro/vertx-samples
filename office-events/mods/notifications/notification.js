@@ -1,22 +1,22 @@
+/*
+ * Responsible for converting the received Notification json object in string format
+ * into an Object. This object is published to all clients. Before publication we
+ * add the notification type to it.
+ */
+
 load('vertx.js');
 
 var logger = vertx.logger;
 
-var eb = vertx.eventBus;
-
-var senderAddress = "message.send.notification";
+var eventBus = vertx.eventBus;
 
 var handler = function (message) {
-    var parse = JSON.parse(message);
-    logger.info("Received a message from" + parse.message);
-    eb.send(senderAddress, parse.message);
+    var notification = JSON.parse(message);
+    logger.info("Received a notification" + notification.message);
+    notification.type = "notification";
+    eventBus.publish("message.all.clients", notification);
 };
 
-var address = "notification.received";
-eb.registerHandler(address, handler);
+eventBus.registerHandler("notification.received", handler);
 
-function vertxStop() {
-    eb.unregisterHandler(address, handler);
-}
-
-logger.info("Started the notification module listening to " + address);
+logger.info("Started the notification module.");

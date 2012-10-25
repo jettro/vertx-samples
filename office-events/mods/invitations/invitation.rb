@@ -1,3 +1,9 @@
+# This is the invitation module. The module contains two handlers, one
+# for creating a new invitation and one to accept an invitation.
+#
+# Messages are send to the vertx.persist address that shouls somehow
+# store the invitations and the registrations
+
 require "vertx"
 include Vertx
 
@@ -18,8 +24,13 @@ EventBus.register_handler("message.newinvitation") do |message|
                 'registeredPersons' => 0
             }
         }) do |replyMessage|
-        theMessage = {'id'=>replyMessage.body['_id'],'message'=>receivedMessage,'maxPersons'=>receivedMaxPersons}
-        EventBus.send("message.send.invitation",theMessage)
+            invitation = {
+                'id'=>replyMessage.body['_id'],
+                'message'=>receivedMessage,
+                'maxPersons'=>receivedMaxPersons,
+                'type'=>'invitation'
+            }
+            EventBus.publish("message.all.clients",invitation)
     end
 end
 

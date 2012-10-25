@@ -3,14 +3,12 @@ import org.vertx.groovy.core.http.RouteMatcher
 import org.vertx.groovy.core.http.impl.DefaultHttpServer
 
 /**
+ * Web server to handle all incoming web requests.
+ *
  * @author Jettro Coenradie
  */
 def log = container.logger
 EventBus eventBus = vertx.eventBus
-
-eventBus.registerHandler("message.send.notification") {message ->
-    publishMessageToEventBus(message.body, "notification", log, eventBus)
-}
 
 eventBus.registerHandler("message.send.invitation") {message ->
     def theMessage = message.body
@@ -18,17 +16,6 @@ eventBus.registerHandler("message.send.invitation") {message ->
     log.info "Received a message to send to a client ${theMessage}"
     eventBus.publish("message.forclients", theMessage)
 }
-
-def publishMessageToEventBus(message, type, log, eventBus) {
-    log.info "Received a message to send to a client ${message} of type ${type}"
-
-    def theMessage = [:]
-    theMessage.put("message", message)
-    theMessage.put("type", type)
-
-    eventBus.publish("message.forclients", theMessage)
-}
-
 
 RouteMatcher routeMatcher = new RouteMatcher()
 
@@ -38,6 +25,7 @@ routeMatcher.get("/") {req ->
 
 routeMatcher.post("/rest") {req ->
     req.bodyHandler { body ->
+//        def notification =["message":body.toString()]
         eventBus.send("notification.received", body.toString())
     }
 
