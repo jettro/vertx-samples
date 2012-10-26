@@ -25,12 +25,11 @@ routeMatcher.get("/") {req ->
 
 routeMatcher.post("/rest") {req ->
     req.bodyHandler { body ->
-//        def notification =["message":body.toString()]
         eventBus.send("notification.received", body.toString())
     }
 
     req.response.putHeader("Content-Type", "application/json")
-    req.response.end("{\"status\":\"RECEIVED\"}")
+    req.response.end('{"status":"RECEIVED"}')
 
 }
 
