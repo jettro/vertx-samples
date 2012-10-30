@@ -7,14 +7,17 @@
 require "vertx"
 include Vertx
 
+config = Vertx.config
 logger = Vertx.logger
 
-EventBus.register_handler("message.newinvitation") do |message|
+logger.info config["all_clients_address"]
+
+EventBus.register_handler(config["invitation_new"]) do |message|
     message.reply({'message'=>'Thank you for the invitation'})
     receivedMessage = message.body['message']
     receivedMaxPersons = message.body['maxpersons']
 
-    EventBus.send("vertx.persist",
+    EventBus.send(config["vertx_persist"],
         {
             'action' => 'save',
             'collection' => 'invites',
@@ -30,14 +33,14 @@ EventBus.register_handler("message.newinvitation") do |message|
                 'maxPersons'=>receivedMaxPersons,
                 'type'=>'invitation'
             }
-            EventBus.publish("message.all.clients",invitation)
+            EventBus.publish(config["all_clients_address"],invitation)
     end
 end
 
-EventBus.register_handler("message.registerinvitation") do |message|
+EventBus.register_handler(config["invitation_register"]) do |message|
     message.reply({'message'=>'You are now welcome to join me'})
 
-    EventBus.send("vertx.persist",
+    EventBus.send(config["vertx_persist"],
         {
             'action' => 'update',
             'collection' => 'invites',

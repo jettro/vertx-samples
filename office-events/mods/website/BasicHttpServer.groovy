@@ -7,15 +7,11 @@ import org.vertx.groovy.core.http.impl.DefaultHttpServer
  *
  * @author Jettro Coenradie
  */
-def log = container.logger
-EventBus eventBus = vertx.eventBus
 
-eventBus.registerHandler("message.send.invitation") {message ->
-    def theMessage = message.body
-    theMessage.put("type", "invitation")
-    log.info "Received a message to send to a client ${theMessage}"
-    eventBus.publish("message.forclients", theMessage)
-}
+def config = container.config
+def log = container.logger
+
+EventBus eventBus = vertx.eventBus
 
 RouteMatcher routeMatcher = new RouteMatcher()
 
@@ -42,6 +38,6 @@ server.requestHandler(routeMatcher.asClosure())
 
 vertx.createSockJSServer(server).bridge(prefix: '/eventbus', [[:]], [[:]])
 
-server.listen(8080)
+server.listen(config.port)
 
 log.info "The http server is started"
