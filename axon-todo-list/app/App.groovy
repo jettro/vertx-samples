@@ -10,6 +10,5 @@ container.with {
     }
     deployModule('todo') {
         log.info "App: The Todo module is deployed."
-        eventBus.publish("command.todo.create",["todoText":"This is a new TODO"])
     }
 }
