@@ -1,13 +1,17 @@
 package commands
 
+import aggregates.TodoIdentifier
+
 /**
+ * Command for creating a new todoItem with the provided todoText.
+ *
  * @author Jettro Coenradie
  */
 class CreateTodoCommand {
-    String identifier
+    TodoIdentifier identifier
     String todoText
 
-    CreateTodoCommand(String identifier, String todoText) {
+    CreateTodoCommand(TodoIdentifier identifier, String todoText) {
         this.identifier = identifier
         this.todoText = todoText
     }

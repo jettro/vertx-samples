@@ -4,20 +4,25 @@ import org.axonframework.domain.DomainEventMessage
 import org.axonframework.eventsourcing.AbstractEventSourcedAggregateRoot
 import org.axonframework.eventsourcing.EventSourcedEntity
 import events.TodoCreatedEvent
+import events.TodoMarkedAsCompleteEvent
 
 /**
+ * Aggregate root for todoItems
+ *
  * @author Jettro Coenradie
  */
 class Todo extends AbstractEventSourcedAggregateRoot {
     TodoIdentifier aggregateIdentifier
+    TodoStatus status
 
-    Todo() {
+    Todo() {}
 
+    Todo(TodoIdentifier identifier, String todoText) {
+        apply(new TodoCreatedEvent(identifier, todoText))
     }
 
-    Todo(String identifier, String todoText) {
-        println "Trying to create a new ToDo item with id ${identifier}"
-        apply(new TodoCreatedEvent(new TodoIdentifier(identifier), todoText))
+    void markAsComplete() {
+        apply(new TodoMarkedAsCompleteEvent(aggregateIdentifier))
     }
 
     @Override
@@ -27,11 +32,25 @@ class Todo extends AbstractEventSourcedAggregateRoot {
 
     @Override
     protected void handle(DomainEventMessage domainEventMessage) {
-        this.aggregateIdentifier = ((TodoCreatedEvent) domainEventMessage.getPayload()).getIdentifier();
-        println "Handle a new event ${((TodoCreatedEvent)domainEventMessage.getPayload()).todoText}"
+        switch (domainEventMessage.payloadType) {
+            case TodoCreatedEvent.class:
+                this.aggregateIdentifier = (domainEventMessage.payload as TodoCreatedEvent).getIdentifier();
+                this.status = TodoStatus.open
+                break
+            case TodoMarkedAsCompleteEvent.class:
+                this.status = TodoStatus.completed
+                break
+            default:
+                throw new IllegalArgumentException("Event ${domainEventMessage.payloadType} is not supported")
+        }
+
     }
 
     Object getIdentifier() {
         return aggregateIdentifier
     }
+}
+
+enum TodoStatus {
+    open,completed
 }

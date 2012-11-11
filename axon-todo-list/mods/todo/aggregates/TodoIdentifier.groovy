@@ -2,7 +2,10 @@ package aggregates
 
 import org.axonframework.domain.IdentifierFactory
 import org.axonframework.common.Assert
+
 /**
+ * The Identifier for the todoItems
+ *
  * @author Jettro Coenradie
  */
 class TodoIdentifier implements Serializable {
@@ -30,5 +33,12 @@ class TodoIdentifier implements Serializable {
 
     int hashCode() {
         return (identifier != null ? identifier.hashCode() : 0)
+    }
+
+    @Override
+    public String toString() {
+        return "TodoIdentifier{" +
+                "identifier='" + identifier + '\'' +
+                '}';
     }
 }
