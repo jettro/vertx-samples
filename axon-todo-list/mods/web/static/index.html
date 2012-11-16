@@ -1,71 +1,17 @@
-<html>
+<!doctype html>
+<html ng-app="eventBusServices">
 <head>
-    <title>Vert.x sample</title>
+    <title>Axon ToDo list</title>
     <link href="/static/css/style.css" rel="stylesheet">
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
 
     <script src="/static/js/jquery-1.8.2.min.js"></script>
     <script src="/static/js/sockjs-0.2.1.min.js"></script>
     <script src="/static/js/vertxbus-1.3.0.js"></script>
+    <script src="/static/js/angular-1.0.2.min.js"></script>
+    <script src="/static/js/controllers.js"></script>
 </head>
-<body>
-<script>
-    var eb = null;
-    function publish(address, message) {
-        if (eb) {
-            eb.send(address, message, function (reply) {
-                $('#replymessage').html("<div class=\"alert alert-info\">" + reply.message + "</div>");
-                $('#replymessage').fadeIn('fast');
-                $('#replymessage').fadeOut(5000);
-            });
-        }
-    }
-
-    function subscribe(address) {
-        if (eb) {
-            eb.registerHandler(address, function (msg, replyTo) {
-                $('#messages').append("<div class=\"alert\">" + msg.todoText + "</div>");
-            });
-        }
-    }
-
-    function closeConn() {
-        if (eb) {
-            eb.close();
-        }
-    }
-
-    function openConn() {
-        if (!eb) {
-            eb = new vertx.EventBus("http://localhost:8080/eventbus");
-
-            eb.onopen = function () {
-                $("#status_info").text("Connected");
-                $("#status_info").removeClass("alert-error");
-                $("#status_info").addClass("alert-success");
-                subscribe("message.all.clients");
-            };
-
-            eb.onclose = function () {
-                $("#status_info").text("Not connected");
-                $("#status_info").removeClass("alert-success");
-                $("#status_info").addClass("alert-error");
-                eb = null;
-            };
-        }
-    }
-
-    $(document).ready(function () {
-        $("#sendButton").click(function () {
-            var json = {todoText:$("#todoText").val()};
-            publish("command.todo.create", json);
-            $("#todoText").val("");
-        });
-
-        openConn();
-    });
-
-</script>
+<body ng-controller="TodoListCtrl">
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -81,7 +27,7 @@
             <p>Shows what I have to do.</p>
         </div>
         <div class="span4">
-            <div id="status_info" class="alert alert-error">Not Connected</div>
+            <div id="status_info" class="alert {{connectionStatusClass}}">{{connectionStatus}}</div>
         </div>
     </div>
 
@@ -89,16 +35,19 @@
     <div class="row">
         <div class="span8">
             <div id="messages" class="well">
+                <div ng-repeat="todoItem in todoItems">
+                    <div class="alert">{{todoItem.todoText}}</div>
+                </div>
             </div>
         </div>
         <div class="span4">
             <div id="replymessage"></div>
             <div id="invitationForm">
-                <form onsubmit="return false;">
+                <form ng-submit="addTodo()">
                     <legend>Create todo</legend>
                     <label>Text</label>
-                    <input type="text" id="todoText" placeholder="todo text ..."/><br/>
-                    <input type="button" id="sendButton" value="Create todo" class="btn"/>
+                    <input type="text" ng-model="todoText" placeholder="todo text ..."/><br/>
+                    <input type="submit" value="Create todo" class="btn"/>
                 </form>
             </div>
         </div>

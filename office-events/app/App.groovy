@@ -10,13 +10,13 @@
 
 def log = container.logger
 
-def destiationPersist = "vertx.persist"
+def destinationPersist = "vertx.persist"
 def topicAllClients = "message.all.clients"
 
 def appConfig = [
     persisterConfig: [
         "db_name": "officeevents", 
-        "address": destiationPersist
+        "address": destinationPersist
     ],
     websiteConfig: [
         "port": 8080
@@ -29,11 +29,11 @@ def appConfig = [
         "all_clients_address": topicAllClients,
         "invitation_new": "message.newinvitation",
         "invitation_register": "message.registerinvitation",
-        "vertx_persist": destiationPersist
+        "vertx_persist": destinationPersist
     ],
     backupConfig: [
         "backup_create":"message.backup.create",
-        "vertx_persist": destiationPersist
+        "vertx_persist": destinationPersist
     ]
 ]
 

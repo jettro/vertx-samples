@@ -10,8 +10,6 @@ include Vertx
 config = Vertx.config
 logger = Vertx.logger
 
-logger.info config["all_clients_address"]
-
 EventBus.register_handler(config["invitation_new"]) do |message|
     message.reply({'message'=>'Thank you for the invitation'})
     receivedMessage = message.body['message']
