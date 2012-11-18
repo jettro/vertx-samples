@@ -6,15 +6,8 @@ angular.module('eventBusServices', []).factory('EventBus', function () {
 
 function TodoListCtrl($scope, EventBus) {
 
-    /* Init parameters */
-    $scope.todoItems = [
-        {"todoText": "Implement persistence",
-            "completed": false},
-        {"todoText": "Make use of AngularJS",
-            "completed": false},
-        {"todoText": "Have fun",
-            "completed": true}
-    ];
+    /* Init parameters, some todoItems */
+    $scope.todoItems = [];
 
     $scope.connectionStatus = "Waiting";
     $scope.connectionStatusClass = "alert-error";
@@ -25,7 +18,16 @@ function TodoListCtrl($scope, EventBus) {
         $scope.connectionStatusClass = "alert-success";
 
         EventBus.registerHandler("message.all.clients", function (msg, replyTo) {
-            $scope.todoItems.push({"todoText": msg.todoText, "completed": false});
+            if (msg.name == "TodoCreated") {
+                $scope.todoItems.push({"todoText": msg.todoText, "completed": false, "identifier": msg.identifier});
+            } else if (msg.name == "TodoCompleted") {
+                var result = $.grep($scope.todoItems, function (e) {
+                    return e.identifier == msg.identifier;
+                });
+                if (result.length == 1) {
+                    result[0].completed = true;
+                }
+            }
             $scope.$digest();
         });
         $scope.$digest();
@@ -43,6 +45,9 @@ function TodoListCtrl($scope, EventBus) {
         $scope.todoText = '';
     };
 
+    $scope.markCompleted = function (todoItem) {
+        publish(EventBus, "command.todo.markcompleted", {identifier: todoItem.identifier});
+    }
 }
 
 function publish(eventbus, address, message) {

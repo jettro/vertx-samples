@@ -4,9 +4,8 @@ import events.TodoCreatedEvent
 import events.TodoMarkedAsCompleteEvent
 import org.axonframework.domain.EventMessage
 import org.axonframework.eventhandling.EventListenerProxy
-import org.vertx.groovy.deploy.Container
 import org.vertx.groovy.core.eventbus.EventBus
-
+import org.vertx.groovy.deploy.Container
 /**
  * Listener that handles all events and creates messages to store the todoItems in the query database.
  *
@@ -37,12 +36,12 @@ class TodoEventListener implements EventListenerProxy {
             case TodoCreatedEvent.class:
                 logger.info "Received a TodoCreatedEvent"
                 def event = eventMessage.payload as TodoCreatedEvent
-                eventBus.publish("message.all.clients",["todoText": event.todoText,"identifier":event.identifier])
+                eventBus.publish("message.all.clients", ["name": "TodoCreated", "todoText": event.todoText, "identifier": event.identifier.asString()])
                 break
             case TodoMarkedAsCompleteEvent.class:
                 logger.info "Received a TodoMarkedAsCompleteEvent"
                 def event = eventMessage.payload as TodoMarkedAsCompleteEvent
-                // TODO implement this functionality
+                eventBus.publish("message.all.clients", ["name": "TodoCompleted", "identifier": event.identifier.asString()])
                 break
             default:
                 logger.info "Cannot handle this event"

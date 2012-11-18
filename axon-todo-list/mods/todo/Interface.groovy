@@ -4,6 +4,7 @@ import aggregates.TodoIdentifier
 import com.mongodb.Mongo
 import com.thoughtworks.xstream.XStream
 import commands.CreateTodoCommand
+import commands.MarkTodoAsCompleteCommand
 import org.axonframework.commandhandling.CommandBus
 import org.axonframework.commandhandling.SimpleCommandBus
 import org.axonframework.commandhandling.gateway.CommandGateway
@@ -48,11 +49,14 @@ EventBus eventBus = vertx.eventBus
 /* Register the listeners with the event bus for the query database */
 axonEventBus.subscribe(new TodoEventListener(eventBus, container))
 
-
-eventBus.registerHandler("command.todo.create") {message ->
+eventBus.registerHandler("command.todo.create") { message ->
     message.reply(["message": "We have received a new ToDo"])
     def identifier = new TodoIdentifier()
     gateway.send(new CreateTodoCommand(identifier, message.body.todoText))
+}
 
-//    gateway.send(new MarkTodoAsCompleteCommand(identifier))
+eventBus.registerHandler("command.todo.markcompleted") { message ->
+    message.reply(["message": "We have received a ToDo that is completed"])
+    def identifier = new TodoIdentifier(message.body.identifier)
+    gateway.send(new MarkTodoAsCompleteCommand(identifier))
 }

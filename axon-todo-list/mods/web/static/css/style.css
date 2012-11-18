@@ -1,3 +1,14 @@
 body {
     padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 }
+
+/* TodoItem text for completed items and not completed items */
+.done-false {
+    white-space: nowrap;
+}
+
+.done-true {
+    text-decoration: line-through;
+    color: grey;
+    white-space: nowrap;
+}

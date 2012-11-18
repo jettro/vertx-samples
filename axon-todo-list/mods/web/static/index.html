@@ -36,7 +36,12 @@
         <div class="span8">
             <div id="messages" class="well">
                 <div ng-repeat="todoItem in todoItems">
-                    <div class="alert">{{todoItem.todoText}}</div>
+                    <div class="alert" ng-click="markCompleted(todoItem)">
+                        <label class="checkbox inline">
+                            <input type="checkbox" ng-model="todoItem.completed"><span
+                                class="done-{{todoItem.completed}}">{{todoItem.todoText}}</span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
