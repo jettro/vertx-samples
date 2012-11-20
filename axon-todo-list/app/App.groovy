@@ -1,10 +1,11 @@
-import org.vertx.groovy.core.eventbus.EventBus
-
 def log = container.logger
 
-EventBus eventBus = vertx.eventBus
+def persisterConfig = ["db_name": "axon_todo_list", "address": "vertx.mongo.persist"]
 
 container.with {
+    deployModule('vertx.mongo-persistor-v1.2', persisterConfig, 1) {
+        log.info "App: The mongo-persister module is deployed."
+    }
     deployModule('web') {
         log.info "App: The web module is deployed."
     }

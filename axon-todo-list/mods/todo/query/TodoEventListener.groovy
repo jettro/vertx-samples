@@ -6,6 +6,7 @@ import org.axonframework.domain.EventMessage
 import org.axonframework.eventhandling.EventListenerProxy
 import org.vertx.groovy.core.eventbus.EventBus
 import org.vertx.groovy.deploy.Container
+
 /**
  * Listener that handles all events and creates messages to store the todoItems in the query database.
  *
@@ -34,17 +35,45 @@ class TodoEventListener implements EventListenerProxy {
 
         switch (eventType) {
             case TodoCreatedEvent.class:
-                logger.info "Received a TodoCreatedEvent"
-                def event = eventMessage.payload as TodoCreatedEvent
-                eventBus.publish("message.all.clients", ["name": "TodoCreated", "todoText": event.todoText, "identifier": event.identifier.asString()])
+                handleTodoCreatedEvent(eventMessage)
                 break
             case TodoMarkedAsCompleteEvent.class:
-                logger.info "Received a TodoMarkedAsCompleteEvent"
-                def event = eventMessage.payload as TodoMarkedAsCompleteEvent
-                eventBus.publish("message.all.clients", ["name": "TodoCompleted", "identifier": event.identifier.asString()])
+                handleTodoMarkedAsCompletedEvent(eventMessage)
                 break
             default:
                 logger.info "Cannot handle this event"
+        }
+    }
+
+    /* Helper methods */
+
+    private void handleTodoMarkedAsCompletedEvent(EventMessage eventMessage) {
+        logger.info "Received a TodoMarkedAsCompleteEvent"
+        def event = eventMessage.payload as TodoMarkedAsCompleteEvent
+        def mongoAction = [
+                "action": "update",
+                "collection": "todos",
+                "criteria": ["identifier": event.identifier.asString()],
+                "objNew": ["\$set": ["completed": true]],
+                "upsert": true,
+                "multi": false]
+        eventBus.send("vertx.mongo.persist", mongoAction) {
+            eventBus.publish("message.all.clients", ["name": "TodoCompleted", "identifier": event.identifier.asString()])
+        }
+    }
+
+    private void handleTodoCreatedEvent(EventMessage eventMessage) {
+        logger.info "Received a TodoCreatedEvent"
+        def event = eventMessage.payload as TodoCreatedEvent
+
+        def todoItem = [
+                "name": "TodoCreated",
+                "todoText": event.todoText,
+                "identifier": event.identifier.asString(),
+                "completed": false]
+        def mongoAction = ["action": "save", "collection": "todos", "document": todoItem]
+        eventBus.send("vertx.mongo.persist", mongoAction) {
+            eventBus.publish("message.all.clients", todoItem)
         }
     }
 }

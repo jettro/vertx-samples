@@ -30,6 +30,16 @@ function TodoListCtrl($scope, EventBus) {
             }
             $scope.$digest();
         });
+
+        var mongoAction = {"action": "find", "collection": "todos", "matcher": {}};
+        EventBus.send("vertx.mongo.persist", mongoAction, function (reply) {
+            var msg = reply.results;
+            for (var i = 0; i < msg.length; i++) {
+                var todoItem = msg[i];
+                $scope.todoItems.push({"todoText": todoItem.todoText, "completed": todoItem.completed, "identifier": todoItem.identifier});
+            }
+            $scope.$digest();
+        });
         $scope.$digest();
     };
 
@@ -41,16 +51,16 @@ function TodoListCtrl($scope, EventBus) {
 
     /* Controller methods */
     $scope.addTodo = function () {
-        publish(EventBus, "command.todo.create", {todoText: $scope.todoText});
+        send(EventBus, "command.todo.create", {todoText: $scope.todoText});
         $scope.todoText = '';
     };
 
     $scope.markCompleted = function (todoItem) {
-        publish(EventBus, "command.todo.markcompleted", {identifier: todoItem.identifier});
+        send(EventBus, "command.todo.markcompleted", {identifier: todoItem.identifier});
     }
 }
 
-function publish(eventbus, address, message) {
+function send(eventbus, address, message) {
     eventbus.send(address, message, function (reply) {
         /* Hiding an element is still hard with angularjs, so for now we do it the old fashioned way */
         var replyMessageDiv = $('#replymessage');
