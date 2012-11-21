@@ -11,8 +11,12 @@ def log = container.logger
 
 RouteMatcher routeMatcher = new RouteMatcher()
 
-routeMatcher.get("/") {req ->
+routeMatcher.get("/") { req ->
     req.response.sendFile "static/index.html"
+}
+
+routeMatcher.get("/favicon.ico") { req ->
+    req.response.sendFile "static/img/favicon.ico"
 }
 
 routeMatcher.getWithRegEx("^\\/static\\/.*") { req ->
